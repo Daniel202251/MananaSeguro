@@ -6,6 +6,7 @@ import LandingNavbar from './components/LandingNavbar'
 import { conectarWallet } from '../lib/wallet'
 import ardilla from '../assets/Ardilla_vector.png'
 import { usePollarSession } from '../hooks/usePollarSession'
+import pollarLogo from '../assets/polo.webp'
 
 export function AuthScreen({ onAuth, onVolver }) {
     const { t } = useTranslation()
@@ -43,26 +44,14 @@ export function AuthScreen({ onAuth, onVolver }) {
         setError(null)
         try {
             await login({ provider: 'google' })
-            // Si llegó aquí sin error, el login fue exitoso
-            // Reload para que Pollar restaure la sesión desde storage
-            window.location.reload()
-        } catch (e) {
-            setError(e.message ?? 'No se pudo iniciar sesión. Intenta de nuevo.')
-            setLoading(false)
-        }
-    }
-
-    async function handleLoginEmail() {
-        setLoading(true)
-        setError(null)
-        try {
-            await login({ provider: 'email' })
         } catch (e) {
             setError(e.message ?? 'No se pudo iniciar sesión. Intenta de nuevo.')
         } finally {
             setLoading(false)
         }
     }
+
+
 
     async function handleConectarFreighter() {
         setLoading(true)
@@ -186,6 +175,17 @@ export function AuthScreen({ onAuth, onVolver }) {
                                         {t('auth.usarFreighter')}
                                     </button>
 
+                                    {/* Powered by Pollar */}
+                                    <div className="flex items-center justify-center gap-1.5 mt-2">
+                                        <span className="text-xs text-ink/30 dark:text-white/30">Powered by</span>
+                                        <a href="https://pollar.xyz" target="_blank" rel="noopener noreferrer" className="flex items-center">
+                                            <img
+                                                src={pollarLogo}
+                                                alt="Pollar"
+                                                className="h-10 w-auto opacity-100 hover:opacity-100 transition-opacity dark:invert"
+                                            />
+                                        </a>
+                                    </div>
                                 </div>
                             )}
 

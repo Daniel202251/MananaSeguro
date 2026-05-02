@@ -31,7 +31,14 @@ function AppLayout({ usuario, onLogout }) {
 export function AppShell() {
   const [usuario, setUsuario] = useState(null)
   const navigate = useNavigate()
-  const { walletAddress, isAuthenticated } = usePollar()
+
+  const { walletAddress, isAuthenticated, logout } = usePollar()
+
+  function handleLogout() {
+    logout?.()
+    setUsuario(null)
+    navigate('/')
+  }
 
   useEffect(() => {
     if (isAuthenticated && walletAddress) {
@@ -57,8 +64,10 @@ export function AppShell() {
     <Routes>
       <Route path="/" element={<LandingScreen onLogin={() => navigate('/login')} onRegister={() => navigate('/register')} />} />
       <Route path="/login" element={<AuthScreen onAuth={handleAuth} onVolver={() => navigate('/')} />} />
-      <Route path="/register" element={<AuthScreen onAuth={handleAuth} onVolver={() => navigate('/')} />} />
-      <Route path="/*" element={usuario ? <AppLayout usuario={usuario} onLogout={handleLogout} /> : <Navigate to="/" replace />} />
-    </Routes>
+      <Route path="/*" element={
+        usuario || isAuthenticated
+          ? <AppLayout usuario={usuario ?? { nombre: walletAddress?.slice(0, 8), walletAddress }} onLogout={handleLogout} />
+          : <Navigate to="/" replace />
+      } />    </Routes>
   )
 }
