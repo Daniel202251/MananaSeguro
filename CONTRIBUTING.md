@@ -30,6 +30,20 @@ cd netlify/functions
 npm init -y && npm install --save-dev vitest   # first time only
 npx vitest
 ```
+**Frontend (UI only — issues #3, #4, #5, #6):**
+```bash
+cd CreditRoot
+npm install
+npm run dev          # http://localhost:5173
+```
+
+**Frontend + Netlify functions (issues #1, #2, #7, #8):**
+```bash
+npm install -g netlify-cli   # first time only
+cd CreditRoot
+npm install
+netlify dev          # http://localhost:8888 — proxies /api/* to the functions
+```
 
 Tests mock `console.log` and external APIs — no real credentials hit.
 
