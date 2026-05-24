@@ -160,7 +160,7 @@
       {
         "icon": "🎁",
         "step": "Incentivos c/5 años",
-        "desc": "Hasta 9% extra por fidelidad"
+        "desc": "Hasta 7% extra por fidelidad"
       },
       {
         "icon": "🏆",
@@ -248,7 +248,7 @@
   },
   "referrals": {
     "titulo": "Sistema de referidos",
-    "desc": "Invita amigos y sube tu incentivo cada 5 años hasta el 9%.",
+    "desc": "Invita amigos y sube tu incentivo cada 5 años hasta el 7%.",
     "incentivoActual": "tu incentivo actual",
     "tuLink": "Tu link de referido",
     "codigo": "Código:",
@@ -459,7 +459,7 @@
     "resumenPrestamo": "Autopréstamo máx.",
     "resumenPrestamoVal": "{{pct}}% del saldo",
     "resumenIncentivo": "Incentivo máximo",
-    "resumenIncentivoVal": "9% cada 5 años",
+    "resumenIncentivoVal": "7% cada 5 años",
     "ciclosTitulo": "Ciclos de incentivos",
     "ciclosIncentivo": "Incentivos activos",
     "ciclosColCiclo": "Ciclo",

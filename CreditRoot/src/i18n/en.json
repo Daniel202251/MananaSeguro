@@ -160,7 +160,7 @@
       {
         "icon": "🎁",
         "step": "Incentives every 5y",
-        "desc": "Up to 9% extra for loyalty"
+        "desc": "Up to 7% extra for loyalty"
       },
       {
         "icon": "🏆",
@@ -248,7 +248,7 @@
   },
   "referrals": {
     "titulo": "Referral system",
-    "desc": "Invite friends and raise your incentive every 5 years up to 9%.",
+    "desc": "Invite friends and raise your incentive every 5 years up to 7%.",
     "incentivoActual": "your current incentive",
     "tuLink": "Your referral link",
     "codigo": "Code:",

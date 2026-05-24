@@ -6,6 +6,39 @@ Thanks for your interest in contributing! This guide covers how to participate, 
 
 ---
 
+## 🌊 Wave 5 (current cycle)
+
+> **Scope:** web app only (frontend + Netlify functions). The Telegram/WhatsApp bots are out of scope this Wave — see [`ISSUES.md`](./ISSUES.md) for the full list of Wave 5 issues.
+
+All Wave 5 issues are designed to be completed **without access to maintainer credentials**.
+
+### What runs locally without credentials
+
+| Works  | Requires credentials  |
+|---|---|
+| Landing, navigation, dark mode | Login with Google |
+| Language switcher (ES / EN) | Deposit / Withdrawal end-to-end |
+| Carlos Simulator, Contribution Planner | Goal persistence to Supabase |
+| Vitest tests (frontend + backend) | Live Etherfuse / Stellar calls |
+
+No Wave 5 issue requires the live flows in the right column.
+
+### Running backend tests (issues #1, #2)
+
+```bash
+cd netlify/functions
+npm init -y && npm install --save-dev vitest   # first time only
+npx vitest
+```
+
+Tests mock `console.log` and external APIs — no real credentials hit.
+
+### Branch naming for Wave 5
+
+Use `wave5/<issue-number>-<short-description>`, e.g. `wave5/4-auto-detect-language`.
+
+---
+
 ## Before you start
 
 1. Read the [README](./README.md) to understand the project
