@@ -17,6 +17,11 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { randomUUID } from 'crypto'
+import {
+  validateAmount,
+  validateKyc,
+  validateUserId
+} from './_lib/depositValidation.js'
 import { createLogger, errorBody } from './_lib/logger.js'
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
@@ -33,9 +38,6 @@ const ETHERFUSE_BASE =
     ? 'https://api.etherfuse.com'
     : 'https://api.sand.etherfuse.com'
 
-// Monto mínimo en MXN — ISO 25010 Seguridad funcional
-const MONTO_MINIMO_MXN = 40
-const MONTO_MAXIMO_MXN = 100_000
 const FETCH_TIMEOUT_MS = 10_000
 
 // Identificador del activo CETES en Stellar
@@ -111,10 +113,8 @@ export async function handler(event) {
     usuarioId = body.usuarioId
     montoMxn = Number(body.montoMxn)
 
-    if (!usuarioId) throw new Error('usuarioId requerido')
-    if (!montoMxn || isNaN(montoMxn)) throw new Error('montoMxn requerido y debe ser numérico')
-    if (montoMxn < MONTO_MINIMO_MXN) throw new Error(`Monto mínimo: $${MONTO_MINIMO_MXN} MXN`)
-    if (montoMxn > MONTO_MAXIMO_MXN) throw new Error(`Monto máximo: $${MONTO_MAXIMO_MXN.toLocaleString('es-MX')} MXN`)
+    validateUserId(usuarioId)
+    validateAmount(montoMxn)
   } catch (err) {
     return {
       statusCode: 400,
@@ -146,7 +146,9 @@ export async function handler(event) {
     }
 
     // ── Seguridad: bloquear depósito si KYC no está aprobado ─────────────
-    if (usuario.kyc_status !== 'approved') {
+    try {
+      validateKyc(usuario.kyc_status)
+    } catch (err) {
       return {
         statusCode: 403,
         headers: CORS_HEADERS,
