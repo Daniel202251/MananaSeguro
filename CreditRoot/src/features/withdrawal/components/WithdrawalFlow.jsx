@@ -7,6 +7,49 @@ import { useTranslation } from 'react-i18next'
 import { useEtherfuseRate } from '../../../hooks/useEtherfuseRate'
 import { MANANA_SEGURO_RATES } from '../../../data/retirementContent'
 import { formatCurrencyMxn } from '../../../utils/formatters'
+import { Skeleton } from '../../../components/ui/Skeleton'
+
+function WithdrawalSkeleton() {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="bg-white dark:bg-white/5 border border-ink/8 dark:border-white/8 rounded-2xl p-6">
+        <div className="flex items-center gap-3 mb-5">
+          <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+          <div className="space-y-2 flex-1">
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="h-3 w-full" />
+          </div>
+        </div>
+        <div className="mb-5 space-y-3">
+          <div className="flex justify-between">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-12" />
+          </div>
+          <Skeleton className="h-3 w-full rounded-full" />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {[1, 2, 3, 4].map(i => (
+            <Skeleton key={i} className="h-16 w-full rounded-xl" />
+          ))}
+        </div>
+      </div>
+      <div className="bg-white dark:bg-white/5 border border-ink/8 dark:border-white/8 rounded-2xl p-6">
+        <Skeleton className="h-5 w-32 mb-4" />
+        <div className="space-y-3">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="flex gap-3">
+              <Skeleton className="w-6 h-6 shrink-0" />
+              <div className="space-y-1 flex-1">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-3 w-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export function WithdrawalFlow({ meta = 175000 }) {
   const { t } = useTranslation()
@@ -41,6 +84,8 @@ export function WithdrawalFlow({ meta = 175000 }) {
   }, [meta])
 
   useEffect(() => { verificarEstado() }, [verificarEstado])
+
+  if (fase === 'verificando') return <WithdrawalSkeleton />
 
   const falta = Math.max(0, meta - saldoMxn)
   const progresoPct = Math.min((saldoMxn / meta) * 100, 100)
