@@ -592,5 +592,12 @@
     "btnCrear": "Create my first goal and start saving →",
     "btnCreando": "Creating goal...",
     "minimoError": "Minimum savings is ${{min}} MXN"
+  },
+  "errorBoundary": {
+    "titulo": "Something went wrong",
+    "descripcion": "An unexpected error occurred while processing your request. Your money and information are safe. Try again or go back home.",
+    "reintentar": "Try again",
+    "volverInicio": "Back to home",
+    "detallesDev": "Technical details (development only)"
   }
 }
