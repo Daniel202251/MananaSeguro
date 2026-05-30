@@ -11,6 +11,7 @@
 
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Skeleton } from '../../../components/ui/Skeleton'
 
 const MIN_MXN = 40
 const MAX_MXN = 10000
@@ -20,6 +21,30 @@ const STEPS = {
   AMOUNT: 'amount', // 2. Ingresar monto
   CLABE:  'clabe',  // 3. Mostrar CLABE y esperar SPEI
   DONE:   'done',   // 4. Completado
+}
+
+function DepositSkeleton() {
+  return (
+    <div className="bg-white dark:bg-white/5 border border-ink/8 dark:border-white/8 rounded-2xl p-6 flex flex-col gap-5">
+      <div className="space-y-2">
+        <Skeleton className="h-7 w-48" />
+        <Skeleton className="h-4 w-full" />
+      </div>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-12 w-full rounded-xl" />
+        </div>
+        <div className="flex gap-2">
+          <Skeleton className="h-8 w-14 rounded-lg" />
+          <Skeleton className="h-8 w-14 rounded-lg" />
+          <Skeleton className="h-8 w-14 rounded-lg" />
+          <Skeleton className="h-8 w-14 rounded-lg" />
+        </div>
+      </div>
+      <Skeleton className="h-12 w-full rounded-xl mt-2" />
+    </div>
+  )
 }
 
 export function DepositFlow({ usuarioId, kycStatus, onComplete, onClose }) {
@@ -42,6 +67,7 @@ export function DepositFlow({ usuarioId, kycStatus, onComplete, onClose }) {
   const [orderStatus, setOrderStatus] = useState('created')
   const [onboardingUrl, setOnboardingUrl] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [fetchingKyc, setFetchingKyc] = useState(false)
   const [error, setError] = useState(null)
 
   // ── Polling del estado de la orden ────────────────────────────────────────
@@ -68,7 +94,7 @@ export function DepositFlow({ usuarioId, kycStatus, onComplete, onClose }) {
 
   // ── KYC: abrir Etherfuse ──────────────────────────────────────────────────
   async function handleStartKyc() {
-    setLoading(true)
+    setFetchingKyc(true)
     setError(null)
     try {
       const res = await fetch('/api/etherfuse/onboarding', {
@@ -84,7 +110,7 @@ export function DepositFlow({ usuarioId, kycStatus, onComplete, onClose }) {
     } catch (err) {
       setError(err.message)
     } finally {
-      setLoading(false)
+      setFetchingKyc(false)
     }
   }
 
@@ -116,6 +142,8 @@ export function DepositFlow({ usuarioId, kycStatus, onComplete, onClose }) {
   const btnPrimary = 'w-full bg-brand hover:bg-brand-dark text-white font-semibold py-3.5 px-4 rounded-xl transition-all hover:-translate-y-px hover:shadow-lg hover:shadow-brand/30 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
   const btnSecondary = 'w-full bg-transparent border border-ink/15 dark:border-white/15 text-ink dark:text-white font-semibold py-3 px-4 rounded-xl transition-all hover:border-ink/30 dark:hover:border-white/30 cursor-pointer'
 
+  if (loading) return <DepositSkeleton />
+
   return (
     <div className="bg-white dark:bg-white/5 border border-ink/8 dark:border-white/8 rounded-2xl p-6 flex flex-col gap-5">
 
@@ -136,8 +164,8 @@ export function DepositFlow({ usuarioId, kycStatus, onComplete, onClose }) {
             ))}
           </div>
           {error && <ErrorBanner message={error} />}
-          <button onClick={handleStartKyc} disabled={loading} className={btnPrimary}>
-            {loading ? t('deposit.kycAbriendo') : t('deposit.kycBtn')}
+          <button onClick={handleStartKyc} disabled={fetchingKyc} className={btnPrimary}>
+            {fetchingKyc ? t('deposit.kycAbriendo') : t('deposit.kycBtn')}
           </button>
           {onboardingUrl && (
             <button onClick={() => setStep(STEPS.AMOUNT)} className={btnSecondary}>
@@ -146,6 +174,7 @@ export function DepositFlow({ usuarioId, kycStatus, onComplete, onClose }) {
           )}
         </>
       )}
+
 
       {/* ── Monto ── */}
       {step === STEPS.AMOUNT && (
