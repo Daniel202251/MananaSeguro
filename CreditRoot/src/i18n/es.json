@@ -592,5 +592,12 @@
     "btnCrear": "Crear mi primera meta y empezar a ahorrar →",
     "btnCreando": "Creando meta...",
     "minimoError": "El ahorro mínimo es ${{min}} MXN"
+  },
+  "errorBoundary": {
+    "titulo": "Algo salió mal",
+    "descripcion": "Ocurrió un error inesperado al procesar tu solicitud. Tu dinero y tu información están seguros. Intenta de nuevo o vuelve al inicio.",
+    "reintentar": "Reintentar",
+    "volverInicio": "Volver al inicio",
+    "detallesDev": "Detalles técnicos (solo en desarrollo)"
   }
 }

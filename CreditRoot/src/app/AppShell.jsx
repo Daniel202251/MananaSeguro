@@ -8,20 +8,26 @@ import { AuthScreen } from '../screens/AuthScreen'
 import { HomeScreen } from '../screens/HomeScreen'
 import { DashboardScreen } from '../screens/DashboardScreen'
 import { WithdrawalScreen } from '../screens/WithdrawalScreen'
+import { ErrorBoundary } from '../components/ErrorBoundary'
 
 function AppLayout({ usuario, onLogout }) {
   return (
     <div className="bg-surface dark:bg-[#0f0e0d] min-h-screen">
       <AppHeader usuario={usuario} onLogout={onLogout} />
       <main>
-        <Routes>
-          <Route path="/home"       element={<HomeScreen usuario={usuario} />} />
-          <Route path="/dashboard"  element={<DashboardScreen />} />
-          <Route path="/withdrawal" element={<WithdrawalScreen />} />
-          {/* Simulador redirige al dashboard donde está integrado */}
-          <Route path="/planner"    element={<Navigate to="/dashboard" replace />} />
-          <Route path="*"           element={<Navigate to="/home" replace />} />
-        </Routes>
+        {/* Si DepositFlow / WithdrawalFlow (u otra pantalla) lanzan durante el
+            polling, el ErrorBoundary muestra un fallback en vez de dejar la
+            app en blanco. */}
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/home"       element={<HomeScreen usuario={usuario} />} />
+            <Route path="/dashboard"  element={<DashboardScreen />} />
+            <Route path="/withdrawal" element={<WithdrawalScreen />} />
+            {/* Simulador redirige al dashboard donde está integrado */}
+            <Route path="/planner"    element={<Navigate to="/dashboard" replace />} />
+            <Route path="*"           element={<Navigate to="/home" replace />} />
+          </Routes>
+        </ErrorBoundary>
       </main>
       <AppFooter />
     </div>

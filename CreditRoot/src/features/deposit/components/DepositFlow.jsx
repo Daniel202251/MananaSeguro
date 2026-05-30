@@ -50,6 +50,15 @@ function DepositSkeleton() {
 export function DepositFlow({ usuarioId, kycStatus, onComplete, onClose }) {
   const { t } = useTranslation()
 
+  // ── Debug: forzar un crash para probar el ErrorBoundary ───────────────────
+  // Visita la app con ?crash=1 en la URL para lanzar un error durante el render
+  // y verificar que el ErrorBoundary global muestra el fallback en vez de la
+  // pantalla en blanco.
+  if (typeof window !== 'undefined' &&
+      new URLSearchParams(window.location.search).get('crash') === '1') {
+    throw new Error('[DepositFlow] Crash de prueba forzado vía ?crash=1')
+  }
+
   const [step, setStep] = useState(
     kycStatus !== 'approved' ? STEPS.KYC : STEPS.AMOUNT
   )
