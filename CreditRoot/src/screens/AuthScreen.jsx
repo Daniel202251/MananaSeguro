@@ -180,7 +180,7 @@ export function AuthScreen({ onAuth, onVolver }) {
                   {/* Loading */}
                   {loading && (
                     <div className="flex flex-col items-center gap-3 py-4">
-                      <svg className="animate-spin text-brand" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg aria-hidden="true" className="animate-spin text-brand" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                       </svg>
                       <p className="text-sm text-ink/50 dark:text-white/50">{t('auth.conectando')}</p>
@@ -271,7 +271,7 @@ export function AuthScreen({ onAuth, onVolver }) {
                     disabled={loading}>
                     {loading ? (
                       <span className="flex items-center justify-center gap-2">
-                        <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+                        <svg aria-hidden="true" className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
                         {t('auth.conectando')}
                       </span>
                     ) : t('auth.conectar')}
@@ -300,8 +300,9 @@ export function AuthScreen({ onAuth, onVolver }) {
                     <p className="text-ink/40 dark:text-white/40 text-sm">{t('auth.descNombre')}</p>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-ink/40 dark:text-white/40 uppercase tracking-widest mb-2">{t('auth.nombreLabel')}</label>
+                    <label htmlFor="auth-nombre" className="block text-xs font-semibold text-ink/40 dark:text-white/40 uppercase tracking-widest mb-2">{t('auth.nombreLabel')}</label>
                     <input
+                      id="auth-nombre"
                       className="w-full rounded-xl px-5 py-3.5 text-base bg-white dark:bg-white/5 outline-none transition-all duration-200 border border-ink/10 dark:border-white/10 focus:border-brand focus:ring-2 focus:ring-brand/20 text-ink dark:text-white"
                       placeholder={t('auth.nombrePlaceholder')}
                       value={nombre}

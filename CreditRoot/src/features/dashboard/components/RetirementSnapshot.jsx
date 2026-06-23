@@ -359,9 +359,15 @@ export function RetirementSnapshot() {
               <span className="font-semibold text-ink dark:text-white text-sm">{t('snapshot.progresoTitulo')}</span>
               <span className="text-xs text-ink/40 dark:text-white/40">Meta: {formatCurrencyMxn(metaMxn)}</span>
             </div>
-            <div className="h-2 bg-ink/5 dark:bg-white/5 rounded-full mb-2 overflow-hidden">
+            <div
+              role="progressbar"
+              aria-valuenow={metaMxn > 0 ? Math.round(Math.min((lockedBalance / metaMxn) * 100, 100)) : 0}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`Progreso hacia la meta: ${metaMxn > 0 ? Math.round(Math.min((lockedBalance / metaMxn) * 100, 100)) : 0}%`}
+              className="h-2 bg-ink/5 dark:bg-white/5 rounded-full mb-2 overflow-hidden">
               <div className="h-full bg-gradient-to-r from-brand-dark to-brand rounded-full transition-all duration-700"
-                style={{ width: `${Math.min((lockedBalance / metaMxn) * 100, 100)}%` }} />
+                style={{ width: `${metaMxn > 0 ? Math.min((lockedBalance / metaMxn) * 100, 100) : 0}%` }} />
             </div>
             <div className="flex justify-between">
               <span className="text-xs text-ink/40 dark:text-white/40">

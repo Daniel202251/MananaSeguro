@@ -189,12 +189,13 @@ export function DepositFlow({ usuarioId, kycStatus, onComplete, onClose }) {
           </div>
 
           <div>
-            <label className="text-xs text-ink/40 dark:text-white/40 mb-2 block">
+            <label htmlFor="deposit-amount" className="text-xs text-ink/40 dark:text-white/40 mb-2 block">
               {t('deposit.montoLabel')}
             </label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/40 dark:text-white/40 font-semibold">$</span>
               <input
+                id="deposit-amount"
                 type="number"
                 min={MIN_MXN}
                 max={MAX_MXN}
