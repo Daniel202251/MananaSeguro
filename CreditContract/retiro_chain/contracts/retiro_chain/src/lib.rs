@@ -9,7 +9,6 @@ pub struct RetiroChain;
 
 #[contractimpl]
 impl RetiroChain {
-
     // Inicializa el contrato con el dueño y años al retiro
     pub fn inicializar(env: Env, owner: Symbol, anos: u64) {
         env.storage().instance().set(&OWNER, &owner);
@@ -46,3 +45,5 @@ impl RetiroChain {
         ahora >= fecha
     }
 }
+
+mod test;
