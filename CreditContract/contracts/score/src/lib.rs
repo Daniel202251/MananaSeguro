@@ -9,24 +9,38 @@ use soroban_sdk::{
 
 #[contracttype]
 pub enum DataKey {
-    Balance(Address),       // saldo bloqueado por usuario
-    DepositCount(Address),  // número de depósitos
-    RetiroFecha(Address),   // timestamp unix de fecha de retiro
-    Meta(Address),          // meta en stroops (1 USDC = 10_000_000)
-    Prestamo(Address),      // saldo pendiente del autopréstamo
-    PrestamoMeses(Address), // meses pagados del autopréstamo
-    Admin,                  // dirección del administrador
-    UsdcToken,              // dirección del token USDC
+    /// Saldo bloqueado por usuario.
+    Balance(Address),
+    /// Número de depósitos realizados.
+    DepositCount(Address),
+    /// Timestamp Unix de la fecha de retiro permitida.
+    RetiroFecha(Address),
+    /// Meta de ahorro en stroops (1 USDC = 10_000_000).
+    Meta(Address),
+    /// Saldo pendiente del autopréstamo.
+    Prestamo(Address),
+    /// Meses pagados del autopréstamo.
+    PrestamoMeses(Address),
+    /// Dirección del administrador del contrato.
+    Admin,
+    /// Dirección del token USDC.
+    UsdcToken,
 }
 
 // ─── Constantes del modelo de negocio ─────────────────────────────────────────
 
-const MIN_DEPOSIT: i128 = 2_000_000;          // $2 USDC (7 decimales Stellar)
-const PLATAFORMA_FEE: i128 = 100;             // 1% en basis points (10000 = 100%)
-const PRESTAMO_MAX_PCT: i128 = 30;            // 30% del saldo
-const PRESTAMO_FEE_MENSUAL: i128 = 50;        // 0.5% mensual en basis points
+/// Depósito mínimo: 2 USDC (en stroops, 7 decimales Stellar).
+const MIN_DEPOSIT: i128 = 2_000_000;
+/// Comisión de plataforma: 1% en basis points (10000 = 100%).
+const PLATAFORMA_FEE: i128 = 100;
+/// Porcentaje máximo del saldo para autopréstamo: 30%.
+const PRESTAMO_MAX_PCT: i128 = 30;
+/// Interés mensual del autopréstamo: 0.5% en basis points.
+const PRESTAMO_FEE_MENSUAL: i128 = 50;
+/// Plazo máximo del autopréstamo en meses.
 const PRESTAMO_MAX_MESES: u32 = 24;
-const STROOP: i128 = 10_000_000;              // 1 USDC = 10_000_000 stroops
+/// 1 USDC = 10_000_000 stroops.
+const STROOP: i128 = 10_000_000;
 
 // ─── Contrato ─────────────────────────────────────────────────────────────────
 
@@ -36,15 +50,24 @@ pub struct MananaSeguroContract;
 #[contractimpl]
 impl MananaSeguroContract {
 
-    // ── Inicializar contrato ──────────────────────────────────────────────────
+    /// Inicializa el contrato con la dirección del administrador y del token USDC.
     pub fn inicializar(env: Env, admin: Address, usdc_token: Address) {
         admin.require_auth();
         env.storage().instance().set(&DataKey::Admin, &admin);
         env.storage().instance().set(&DataKey::UsdcToken, &usdc_token);
     }
 
-    // ── Depositar USDC y bloquear ─────────────────────────────────────────────
-    // El usuario deposita USDC al contrato. Los fondos quedan bloqueados.
+    /// Deposita USDC al contrato y bloquea los fondos hasta la fecha de retiro.
+    /// En el primer depósito se fija la fecha de retiro y una meta por defecto (10x el monto).
+    ///
+    /// # Arguments
+    /// * `usuario` - Dirección del depositante.
+    /// * `monto` - Cantidad en stroops (mínimo 2 USDC).
+    /// * `anios_bloqueo` - Años de bloqueo (1-40).
+    ///
+    /// # Panics
+    /// Si el monto es menor a `MIN_DEPOSIT`, si `anios_bloqueo` está fuera del rango,
+    /// o si el usuario no autoriza la transferencia.
     pub fn depositar(env: Env, usuario: Address, monto: i128, anios_bloqueo: u32) {
         usuario.require_auth();
 
@@ -90,38 +113,43 @@ impl MananaSeguroContract {
         );
     }
 
-    // ── Ver saldo bloqueado ───────────────────────────────────────────────────
+    /// Retorna el saldo bloqueado del usuario en stroops.
     pub fn ver_balance(env: Env, usuario: Address) -> i128 {
         env.storage().persistent()
             .get(&DataKey::Balance(usuario))
             .unwrap_or(0)
     }
 
-    // ── Ver fecha de retiro ───────────────────────────────────────────────────
+    /// Retorna el timestamp Unix de la fecha de retiro permitida para el usuario.
     pub fn ver_retiro(env: Env, usuario: Address) -> u64 {
         env.storage().persistent()
             .get(&DataKey::RetiroFecha(usuario))
             .unwrap_or(0)
     }
 
-    // ── Ver meta ──────────────────────────────────────────────────────────────
+    /// Retorna la meta de ahorro del usuario en stroops.
     pub fn ver_meta(env: Env, usuario: Address) -> i128 {
         env.storage().persistent()
             .get(&DataKey::Meta(usuario))
             .unwrap_or(0)
     }
 
-    // ── Ver número de depósitos ───────────────────────────────────────────────
+    /// Retorna la cantidad de depósitos realizados por el usuario.
     pub fn ver_depositos(env: Env, usuario: Address) -> u32 {
         env.storage().persistent()
             .get(&DataKey::DepositCount(usuario))
             .unwrap_or(0)
     }
 
-    // ── Retirar al llegar la meta ─────────────────────────────────────────────
-    // Solo se puede retirar si:
-    // 1. El timestamp actual >= fecha de retiro, O
-    // 2. El saldo >= meta
+    /// Retira el saldo bloqueado del usuario.
+    /// Requiere que se cumpla al menos una de estas condiciones:
+    /// 1. El timestamp actual superó la fecha de retiro, o
+    /// 2. El saldo alcanzó o superó la meta.
+    /// No debe haber un autopréstamo activo. Se cobra una comisión de plataforma (1%).
+    ///
+    /// # Panics
+    /// Si el usuario no tiene saldo, si no cumple las condiciones de retiro,
+    /// o si tiene un préstamo activo sin liquidar.
     pub fn retirar(env: Env, usuario: Address) {
         usuario.require_auth();
 
@@ -180,8 +208,15 @@ impl MananaSeguroContract {
         );
     }
 
-    // ── Solicitar autopréstamo de emergencia ──────────────────────────────────
-    // Máximo 30% del saldo bloqueado, 0.5% mensual, hasta 24 meses
+    /// Solicita un autopréstamo de emergencia sobre el saldo bloqueado.
+    /// Máximo 30% del saldo, interés 0.5% mensual, plazo hasta 24 meses.
+    ///
+    /// # Arguments
+    /// * `monto` - Cantidad a solicitar en stroops (mínimo 1 USDC).
+    ///
+    /// # Panics
+    /// Si el usuario no tiene saldo, si ya tiene un préstamo activo,
+    /// si excede el 30% del saldo, o si el monto es menor a 1 USDC.
     pub fn solicitar_prestamo(env: Env, usuario: Address, monto: i128) {
         usuario.require_auth();
 
@@ -220,7 +255,12 @@ impl MananaSeguroContract {
         );
     }
 
-    // ── Pagar cuota mensual del autopréstamo ──────────────────────────────────
+    /// Paga la cuota mensual del autopréstamo activo.
+    /// El pago incluye capital (saldo / meses restantes) + interés mensual.
+    /// El interés se transfiere al administrador.
+    ///
+    /// # Panics
+    /// Si el usuario no tiene un autopréstamo activo, o si ya está liquidado.
     pub fn pagar_prestamo(env: Env, usuario: Address) {
         usuario.require_auth();
 
@@ -272,7 +312,7 @@ impl MananaSeguroContract {
         );
     }
 
-    // ── Ver estado del autopréstamo ───────────────────────────────────────────
+    /// Retorna el saldo pendiente del autopréstamo y los meses pagados.
     pub fn ver_prestamo(env: Env, usuario: Address) -> (i128, u32) {
         let saldo: i128 = env.storage().persistent()
             .get(&DataKey::Prestamo(usuario.clone()))
@@ -283,7 +323,13 @@ impl MananaSeguroContract {
         (saldo, meses)
     }
 
-    // ── Actualizar meta de retiro ─────────────────────────────────────────────
+    /// Actualiza la meta de ahorro del usuario.
+    ///
+    /// # Arguments
+    /// * `nueva_meta` - Nueva meta en stroops (debe ser mayor a 0).
+    ///
+    /// # Panics
+    /// Si `nueva_meta` es 0 o negativo.
     pub fn actualizar_meta(env: Env, usuario: Address, nueva_meta: i128) {
         usuario.require_auth();
         assert!(nueva_meta > 0, "La meta debe ser mayor a 0");
