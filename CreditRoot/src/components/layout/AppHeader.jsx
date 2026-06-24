@@ -56,7 +56,8 @@ export function AppHeader({ usuario, onLogout }) {
 
             <button
               className="text-xs font-bold px-3 py-1.5 rounded-lg border border-ink/10 dark:border-white/10 text-ink/50 dark:text-white/50 hover:text-ink dark:hover:text-white hover:border-ink/20 transition-all cursor-pointer"
-              onClick={toggleLang}>
+              onClick={toggleLang}
+              aria-label="Cambiar idioma">
               {i18n.language === 'es' ? 'EN' : 'ES'}
             </button>
 
@@ -134,13 +135,15 @@ export function AppHeader({ usuario, onLogout }) {
 
               <button
                 className="text-xs font-bold px-3 py-1.5 rounded-lg border border-ink/10 dark:border-white/10 text-ink/50 dark:text-white/50 hover:text-ink dark:hover:text-white transition-all cursor-pointer"
-                onClick={toggleLang}>
+                onClick={toggleLang}
+                aria-label="Cambiar idioma">
                 {i18n.language === 'es' ? 'EN' : 'ES'}
               </button>
 
               <button
                 className="text-xs font-bold px-3 py-1.5 rounded-lg border border-ink/10 dark:border-white/10 text-ink/50 dark:text-white/50 hover:text-ink dark:hover:text-white transition-all cursor-pointer"
-                onClick={toggle}>
+                onClick={toggle}
+                aria-label={dark ? 'Activar modo claro' : 'Activar modo oscuro'}>
                 {dark ? '☀️' : '🌙'}
               </button>
 

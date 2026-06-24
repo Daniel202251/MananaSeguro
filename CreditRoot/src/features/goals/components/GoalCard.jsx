@@ -11,9 +11,20 @@ export function GoalCard({ meta, saldoMxn = 0, seleccionada = false, onSeleccion
     ? Math.min((saldoMxn / meta.monto_objetivo_mxn) * 100, 100)
     : 0
 
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      onSeleccionar?.()
+    }
+  }
+
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-pressed={seleccionada}
       onClick={onSeleccionar}
+      onKeyDown={handleKeyDown}
       className={`relative bg-white dark:bg-white/5 border-2 rounded-2xl p-4 cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-md ${
         seleccionada
           ? 'border-brand shadow-brand/20 shadow-md'
@@ -32,15 +43,15 @@ export function GoalCard({ meta, saldoMxn = 0, seleccionada = false, onSeleccion
         <button
           onClick={e => { e.stopPropagation(); onEditar?.() }}
           className="w-7 h-7 rounded-lg bg-ink/5 dark:bg-white/5 hover:bg-brand/10 hover:text-brand flex items-center justify-center text-ink/40 dark:text-white/40 transition-all cursor-pointer"
-          title="Editar meta">
-          ✏️
+          aria-label="Editar meta">
+          <span aria-hidden="true">✏️</span>
         </button>
         {puedeEliminar && (
           <button
             onClick={e => { e.stopPropagation(); onEliminar?.() }}
             className="w-7 h-7 rounded-lg bg-ink/5 dark:bg-white/5 hover:bg-red-500/10 hover:text-red-500 flex items-center justify-center text-ink/40 dark:text-white/40 transition-all cursor-pointer"
-            title="Eliminar meta">
-            🗑️
+            aria-label="Eliminar meta">
+            <span aria-hidden="true">🗑️</span>
           </button>
         )}
       </div>
@@ -57,7 +68,13 @@ export function GoalCard({ meta, saldoMxn = 0, seleccionada = false, onSeleccion
       </p>
 
       {/* Barra de progreso */}
-      <div className="h-1.5 bg-ink/5 dark:bg-white/5 rounded-full overflow-hidden mb-2">
+      <div
+        role="progressbar"
+        aria-valuenow={Math.round(progresoPct)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`Progreso hacia la meta: ${Math.round(progresoPct)}%`}
+        className="h-1.5 bg-ink/5 dark:bg-white/5 rounded-full overflow-hidden mb-2">
         <div
           className="h-full bg-gradient-to-r from-brand-dark to-brand rounded-full transition-all duration-700"
           style={{ width: `${progresoPct}%` }}
@@ -112,10 +129,15 @@ export function GoalEditModal({ meta, usuarioId, onGuardado, onCerrar }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onCerrar}>
-      <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="goal-edit-title"
+        className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 w-full max-w-md shadow-2xl"
+        onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-5">
-          <h5 className="font-display font-black text-ink dark:text-white text-lg">Editar meta</h5>
-          <button onClick={onCerrar} className="text-ink/30 hover:text-ink dark:text-white/30 dark:hover:text-white text-xl cursor-pointer">✕</button>
+          <h5 id="goal-edit-title" className="font-display font-black text-ink dark:text-white text-lg">Editar meta</h5>
+          <button onClick={onCerrar} aria-label="Cerrar" className="text-ink/30 hover:text-ink dark:text-white/30 dark:hover:text-white text-xl cursor-pointer">✕</button>
         </div>
 
         <div className="flex flex-col gap-4">
@@ -216,10 +238,15 @@ export function AddGoalButton({ usuarioId, onMetaCreada }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setAbierto(false)}>
-      <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="add-goal-title"
+        className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+        onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-5">
-          <h5 className="font-display font-black text-ink dark:text-white text-lg">Nueva meta</h5>
-          <button onClick={() => setAbierto(false)} className="text-ink/30 hover:text-ink dark:text-white/30 dark:hover:text-white text-xl cursor-pointer">✕</button>
+          <h5 id="add-goal-title" className="font-display font-black text-ink dark:text-white text-lg">Nueva meta</h5>
+          <button onClick={() => setAbierto(false)} aria-label="Cerrar" className="text-ink/30 hover:text-ink dark:text-white/30 dark:hover:text-white text-xl cursor-pointer">✕</button>
         </div>
         <div className="flex flex-col gap-4">
           <div>

@@ -89,7 +89,7 @@ export function GoalSetup({ usuario, onMetaCreada }) {
             {/* Ahorro mensual */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="text-sm text-ink/60 dark:text-white/60 font-medium">
+                <label htmlFor="goal-ahorro" className="text-sm text-ink/60 dark:text-white/60 font-medium">
                   {t('goalSetup.ahorroLabel')}
                 </label>
                 <span className="flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full border bg-green-500/10 text-green-700 border-green-500/20">
@@ -100,6 +100,7 @@ export function GoalSetup({ usuario, onMetaCreada }) {
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/40 dark:text-white/40 font-semibold text-sm">$</span>
                 <input
+                  id="goal-ahorro"
                   type="number"
                   min={AHORRO_MIN}
                   max={100000}
@@ -131,12 +132,13 @@ export function GoalSetup({ usuario, onMetaCreada }) {
             {/* Años al retiro */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="text-sm text-ink/60 dark:text-white/60 font-medium">
+                <label htmlFor="goal-anos" className="text-sm text-ink/60 dark:text-white/60 font-medium">
                   {t('goalSetup.aniosLabel')}
                 </label>
                 <span className="text-sm font-bold text-ink dark:text-white">{anos} {t('goalSetup.aniosSufijo')}</span>
               </div>
               <input
+                id="goal-anos"
                 type="range"
                 min="5" max="40" step="5"
                 value={anos}
